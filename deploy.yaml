@@ -1,0 +1,42 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  namespace: swe599-demo
+  name: openshift-spring-demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openshift-spring-demo-app
+  template:
+    metadata:
+      labels:
+        app: openshift-spring-demo-app
+    spec:
+      containers:
+        - name: openshift-spring-demo
+          image: openshift-spring-demo
+          imagePullPolicy: Never
+          ports:
+            - name: http
+              containerPort: 8081
+              protocol: TCP
+          resources:
+            limits:
+              memory: "1024Mi"
+              cpu: "500m"
+---
+kind: Service
+apiVersion: v1
+metadata:
+  namespace: swe599-demo
+  name: openshift-spring-demo-service
+spec:
+  type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 8081
+      targetPort: 8081
+      nodePort: 30001
+  selector:
+    app: openshift-spring-demo-app
